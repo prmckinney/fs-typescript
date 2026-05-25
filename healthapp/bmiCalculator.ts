@@ -12,13 +12,13 @@ export const calculateBmi = (height: number, weight: number): string => {
     case (bmi < 50): return "Obese (Class II)";
     default: return "Obese (Class III)";
   }
-}
+};
 
 if (process.argv[1] === import.meta.filename) {
   if (process.argv.length < 4) throw new Error('Not enough arguments');
   if (process.argv.length > 4) throw new Error('Too many arguments');
   
-  if (isNotNumber(process.argv[2]) || isNotNumber(process.argv[3])) throw new Error ('You must pass numbers only')
+  if (isNotNumber(process.argv[2]) || isNotNumber(process.argv[3])) throw new Error ('You must pass numbers only');
   
   // command line arguments start from process.argv[2]
   const a: number = Number(process.argv[2]);
