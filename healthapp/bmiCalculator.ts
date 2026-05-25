@@ -1,3 +1,5 @@
+import { isNotNumber } from "./utils.ts";
+
 const calculateBmi = (height: number, weight: number): string => {
   const bmi:number = weight/(height/100*height/100);
   switch(true) {
@@ -12,4 +14,13 @@ const calculateBmi = (height: number, weight: number): string => {
   }
 }
 
-console.log(calculateBmi(180, 74));
+if (process.argv.length < 4) throw new Error('Not enough arguments');
+if (process.argv.length > 4) throw new Error('Too many arguments');
+
+if (isNotNumber(process.argv[2]) || isNotNumber(process.argv[3])) throw new Error ('You must pass numbers only')
+
+// command line arguments start from process.argv[2]
+const a: number = Number(process.argv[2]);
+const b: number = Number(process.argv[3]);
+
+console.log(calculateBmi(a, b));

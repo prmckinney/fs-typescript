@@ -1,3 +1,5 @@
+import { isNotNumber } from "./utils.ts";
+
 interface Result { 
   periodLength: number,
   trainingDays: number,
@@ -34,4 +36,20 @@ const exerciseCalculator = (hours: number[], target: number) => {
   }
 }
 
-console.log(exerciseCalculator([3, 0, 2, 4.5, 0, 3, 1], 2));
+// Check for minimum # of params
+if (process.argv.length < 4) 
+  throw new Error('Not enough arguments');
+
+// Parse first param as target
+if (isNotNumber(process.argv[2])) 
+  throw new Error ('Target must be a numbers')
+const target: number = Number(process.argv[2]);
+
+// Parse remaining params as day data
+const days:number[] = process.argv.slice(3).map(n => {
+  if (isNotNumber(n)) 
+    throw new Error ('All day data must be a numbers')
+  else return Number(n)
+});
+
+console.log(exerciseCalculator(days, target));
