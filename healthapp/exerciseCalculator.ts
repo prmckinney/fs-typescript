@@ -10,7 +10,7 @@ interface Result {
   average: number
 }
 
-const exerciseCalculator = (hours: number[], target: number) => {
+const exerciseCalculator = (hours: number[], target: number): Result => {
   const average = hours.reduce((sum, value) => sum + value, 0)/hours.length;
   const trainingDays = hours.length - hours.filter(v => v===0).length;
   var rating: number;
