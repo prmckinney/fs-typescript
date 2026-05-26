@@ -37,15 +37,6 @@ app.post('/exercises', (req, res) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access 
   const hours:number[] = daily_exercises.map((n:string) => Number(n));
 
-  console.log("req ==> ", req.body);
-  // if (isNotNumber(req.query.height) || isNotNumber(req.query.weight)) {
-  //   res.json({error: "malformatted parameters"});
-  //   return;
-  // }
-  // const height:number = Number(req.query.height);
-  // const weight:number = Number(req.query.weight);
-  // const bmi:string = calculateBmi(height, weight);
-  // res.json({height: height, weight: weight, bmi: bmi});
   return res.json(exerciseCalculator(hours, Number(target)));
 });
 
