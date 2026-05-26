@@ -10,7 +10,7 @@ interface Result {
   average: number
 }
 
-const exerciseCalculator = (hours: number[], target: number): Result => {
+export const exerciseCalculator = (hours: number[], target: number): Result => {
   const average = hours.reduce((sum, value) => sum + value, 0)/hours.length;
   const trainingDays = hours.length - hours.filter(v => v===0).length;
   let rating: number;
@@ -36,20 +36,22 @@ const exerciseCalculator = (hours: number[], target: number): Result => {
   };
 };
 
-// Check for minimum # of params
-if (process.argv.length < 4) 
-  throw new Error('Not enough arguments');
-
-// Parse first param as target
-if (isNotNumber(process.argv[2])) 
-  throw new Error ('Target must be a numbers');
-const target: number = Number(process.argv[2]);
-
-// Parse remaining params as day data
-const days:number[] = process.argv.slice(3).map(n => {
-  if (isNotNumber(n)) 
-    throw new Error ('All day data must be a numbers');
-  else return Number(n);
-});
-
-console.log(exerciseCalculator(days, target));
+if (process.argv[1] === import.meta.filename) {
+  // Check for minimum # of params
+  if (process.argv.length < 4) 
+    throw new Error('Not enough arguments');
+  
+  // Parse first param as target
+  if (isNotNumber(process.argv[2])) 
+    throw new Error ('Target must be a numbers');
+  const target: number = Number(process.argv[2]);
+  
+  // Parse remaining params as day data
+  const days:number[] = process.argv.slice(3).map(n => {
+    if (isNotNumber(n)) 
+      throw new Error ('All day data must be a numbers');
+    else return Number(n);
+  });
+  
+  console.log(exerciseCalculator(days, target));
+}
