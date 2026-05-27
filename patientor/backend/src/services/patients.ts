@@ -5,7 +5,7 @@ import type {
   NewPatientData,
   PatientData,
 } from "../types.ts";
-import { parseString } from "../utils.ts";
+import { parseString, parseGender } from "../utils.ts";
 
 const getEntries = (): PatientData[] => {
   return patientData;
@@ -37,7 +37,7 @@ const parseNewPatientEntry = (object: unknown): NewPatientData => {
       name: parseString(object.name),
       dateOfBirth: parseString(object.dateOfBirth),
       ssn: parseString(object.ssn),
-      gender: parseString(object.gender),
+      gender: parseGender(object.gender),
       occupation: parseString(object.occupation),
     };
 
