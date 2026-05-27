@@ -13,4 +13,6 @@ export interface PatientData {
   occupation: string;
 }
 
+export type NewPatientData = Omit<PatientData, "id">;
+
 export type NonSensitivePatientData = Omit<PatientData, "ssn">;
