@@ -2,12 +2,12 @@
   "name": "patientor",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./src/index.ts",
   "type": "module",
   "scripts": {
     "tsc": "tsc",
-    "dev": "concurrently \"tsc --watch\" \"node --watch --experimental-transform-types --disable-warning=ExperimentalWarning index.ts\"",
-    "start": "node --experimental-transform-types --disable-warning=ExperimentalWarning index.ts",
+    "dev": "concurrently \"tsc --watch\" \"node --watch --experimental-transform-types --disable-warning=ExperimentalWarning ./src/index.ts\"",
+    "start": "node --experimental-transform-types --disable-warning=ExperimentalWarning ./src/index.ts",
     "lint": "eslint ."
   },
   "author": "",
