@@ -1,0 +1,29 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+import { apiBaseUrl } from "./constants";
+import type { DiaryEntry } from "./types";
+import Diaries from "./components/Diaries";
+import diaryService from "./services/diaries";
+
+const App = () => {
+  const [diaries, setDiaries] = useState<DiaryEntry[]>([]);
+
+  useEffect(() => {
+    void axios.get<void>(`${apiBaseUrl}/ping`);
+
+    const fetchPatientList = async () => {
+      const diaries = await diaryService.getAll();
+      setDiaries(diaries);
+    };
+    void fetchPatientList();
+  }, []);
+
+  return (
+    <div>
+      <Diaries diaries={diaries} />
+    </div>
+  );
+};
+
+export default App;
