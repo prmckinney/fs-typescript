@@ -30,6 +30,12 @@ router.get("/", (_req, res: Response<NonSensitivePatientData[]>) => {
   res.send(data);
 });
 
+router.get("/:id", (req, res: Response<PatientData>) => {
+  const data = patientServices.getPatientEntry(req.params.id);
+  if (data) res.send(data);
+  else res.sendStatus(404);
+});
+
 const newPatientParser = (req: Request, _res: Response, next: NextFunction) => {
   try {
     NewPatientSchema.parse(req.body);
