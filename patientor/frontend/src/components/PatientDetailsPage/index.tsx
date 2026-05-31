@@ -5,27 +5,15 @@ import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import TransgenderIcon from "@mui/icons-material/Transgender";
 
-import { Patient, Gender } from "../../types";
+import { Diagnosis, Patient, Gender } from "../../types";
 import patientService from "../../services/patients";
+import diagnosesService from "../../services/diagnoses";
 
-const renderEntries = (patient: Patient) => {
-  if (!patient.entries) return null;
+const lookupDiagnosis = (code: string, diagnoses: Diagnosis[]): string => {
+  const diagnosis = diagnoses.find((n) => n.code === code);
 
-  return (
-    <div>
-      <h2>Entries</h2>
-      {patient.entries.map((entry) => (
-        <div key={entry.id}>
-          {entry.date} <i>{entry.description}</i>
-          <ul>
-            {entry.diagnosisCodes?.map((code) => (
-              <li key={code}>{code}</li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </div>
-  );
+  if (diagnosis) return diagnosis.name;
+  else return "";
 };
 
 const renderGender = (param: Gender) => {
@@ -41,7 +29,18 @@ const renderGender = (param: Gender) => {
 
 const PatientDetailsPage = () => {
   const [patient, setPatient] = useState<Patient>();
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const id = useParams().id;
+
+  useEffect(() => {
+    const getDiagnoses = async () => {
+      const data = await diagnosesService.getAll();
+      setDiagnoses(data);
+    };
+
+    getDiagnoses();
+  }, []);
+
   useEffect(() => {
     const getPatient = async (id: string) => {
       const data = await patientService.getPatient(id);
@@ -49,7 +48,7 @@ const PatientDetailsPage = () => {
     };
 
     if (id) getPatient(id);
-  }, [id, setPatient]);
+  }, [id]);
 
   if (!patient) return null;
 
@@ -66,7 +65,19 @@ const PatientDetailsPage = () => {
         <br></br>
         {patient.dateOfBirth ? `date of birth: ${patient.dateOfBirth}` : null}
       </p>
-      {renderEntries(patient)}
+      <h2>Entries</h2>
+      {patient.entries.map((entry) => (
+        <div key={entry.id}>
+          {entry.date} <i>{entry.description}</i>
+          <ul>
+            {entry.diagnosisCodes?.map((code) => (
+              <li key={code}>
+                {code} {lookupDiagnosis(code, diagnoses)}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
   );
 };
