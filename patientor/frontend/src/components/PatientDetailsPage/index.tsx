@@ -8,6 +8,7 @@ import TransgenderIcon from "@mui/icons-material/Transgender";
 import { Diagnosis, Patient, Gender } from "../../types";
 import patientService from "../../services/patients";
 import diagnosesService from "../../services/diagnoses";
+import EntryDetails from "./entry";
 
 const lookupDiagnosis = (code: string, diagnoses: Diagnosis[]): string => {
   const diagnosis = diagnoses.find((n) => n.code === code);
@@ -67,16 +68,7 @@ const PatientDetailsPage = () => {
       </p>
       <h2>Entries</h2>
       {patient.entries.map((entry) => (
-        <div key={entry.id}>
-          {entry.date} <i>{entry.description}</i>
-          <ul>
-            {entry.diagnosisCodes?.map((code) => (
-              <li key={code}>
-                {code} {lookupDiagnosis(code, diagnoses)}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <EntryDetails entry={entry} />
       ))}
     </div>
   );
