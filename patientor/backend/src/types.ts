@@ -6,6 +6,55 @@ export interface DiagnosesData {
   latin?: string;
 }
 
+interface BaseEntry {
+  id: string;
+  description: string;
+  date: string;
+  specialist: string;
+  diagnosisCodes?: Array<DiagnosesData["code"]>;
+}
+
+const HealthCheckRating = {
+  Healthy: 0,
+  LowRisk: 1,
+  HighRisk: 2,
+  CriticalRisk: 3,
+} as const;
+
+type HealthCheckRating =
+  (typeof HealthCheckRating)[keyof typeof HealthCheckRating];
+
+interface HealthCheckEntry extends BaseEntry {
+  type: "HealthCheck";
+  healthCheckRating: HealthCheckRating;
+}
+
+interface Discharge {
+  date: string;
+  criteria: string;
+}
+
+interface HospitalEntry extends BaseEntry {
+  type: "Hospital";
+  discharge: Discharge;
+}
+
+interface SickLeave {
+  startDate: string;
+  endDate: string;
+}
+
+interface OccupationalHealthcareEntry extends BaseEntry {
+  type: "OccupationalHealthcare";
+  employerName: string;
+  sickLeave?: SickLeave;
+}
+
+export type Entry =
+  | HospitalEntry
+  | OccupationalHealthcareEntry
+  | HealthCheckEntry;
+
 export const Gender = {
   Male: "male",
   Female: "female",
@@ -14,7 +63,14 @@ export const Gender = {
 
 export type Gender = (typeof Gender)[keyof typeof Gender];
 
-export const EntrySchema = z.object({});
+export interface NewPatientData {
+  name: string;
+  dateOfBirth: string;
+  ssn: string;
+  gender: Gender;
+  occupation: string;
+  entries: Entry[];
+}
 
 export const NewPatientSchema = z.object({
   name: z.string(),
@@ -22,12 +78,11 @@ export const NewPatientSchema = z.object({
   ssn: z.string(),
   gender: z.enum(Gender),
   occupation: z.string(),
-  entries: z.array(EntrySchema),
+  //entries: z.array(z.object(Entry)),
 });
 
-export type NewPatientData = z.infer<typeof NewPatientSchema>;
 export interface PatientData extends NewPatientData {
   id: string;
 }
 
-export type NonSensitivePatientData = Omit<PatientData, "ssn | entries">;
+export type NonSensitivePatientData = Omit<PatientData, "ssn" | "entries">;
