@@ -8,6 +8,26 @@ import TransgenderIcon from "@mui/icons-material/Transgender";
 import { Patient, Gender } from "../../types";
 import patientService from "../../services/patients";
 
+const renderEntries = (patient: Patient) => {
+  if (!patient.entries) return null;
+
+  return (
+    <div>
+      <h2>Entries</h2>
+      {patient.entries.map((entry) => (
+        <div key={entry.id}>
+          {entry.date} <i>{entry.description}</i>
+          <ul>
+            {entry.diagnosisCodes?.map((code) => (
+              <li key={code}>{code}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const renderGender = (param: Gender) => {
   switch (param) {
     case Gender.Male:
@@ -39,13 +59,14 @@ const PatientDetailsPage = () => {
         {patient.name}
         {renderGender(patient.gender)}
       </h1>
-      <h4>
+      <p>
         {patient.ssn ? `ssn: ${patient.ssn}` : null}
         <br></br>
         occupation: {patient.occupation}
         <br></br>
         {patient.dateOfBirth ? `date of birth: ${patient.dateOfBirth}` : null}
-      </h4>
+      </p>
+      {renderEntries(patient)}
     </div>
   );
 };
