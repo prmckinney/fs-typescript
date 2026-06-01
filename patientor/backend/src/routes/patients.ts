@@ -4,11 +4,13 @@ import { z } from "zod";
 
 import patientServices from "../services/patients.ts";
 import type {
+  Entry,
+  NewEntry,
   NonSensitivePatientData,
   NewPatientData,
   PatientData,
 } from "../types.ts";
-import { NewPatientSchema } from "../types.ts";
+import { NewEntrySchema, NewPatientSchema } from "../types.ts";
 
 const router = express.Router();
 
@@ -54,6 +56,25 @@ router.post(
     res: Response<PatientData>,
   ) => {
     const addedEntry = patientServices.addPatient(req.body);
+    res.json(addedEntry);
+  },
+);
+
+const newEntryParser = (req: Request, _res: Response, next: NextFunction) => {
+  try {
+    NewEntrySchema.parse(req.body);
+    console.log(req.body);
+    next();
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+router.post(
+  "/:id/entries",
+  newEntryParser,
+  (req: Request<{ id: string }, unknown, NewEntry>, res: Response<Entry>) => {
+    const addedEntry = patientServices.addEntry(req.params.id, req.body);
     res.json(addedEntry);
   },
 );
