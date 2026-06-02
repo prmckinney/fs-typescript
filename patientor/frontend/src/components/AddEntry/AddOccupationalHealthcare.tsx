@@ -1,10 +1,18 @@
-import { useState, SyntheticEvent } from "react";
+import { useEffect, useState, SyntheticEvent } from "react";
 import axios from "axios";
 
-import { TextField, Button } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Select,
+  SelectChangeEvent,
+  MenuItem,
+  InputLabel,
+} from "@mui/material";
 
-import { NewEntry } from "../../types";
+import { Diagnosis, NewEntry } from "../../types";
 import patientService from "../../services/patients";
+import diagnosesService from "../../services/diagnoses";
 
 const AddOccupationalHealthcare = ({
   id,
@@ -17,9 +25,20 @@ const AddOccupationalHealthcare = ({
   const [description, setDescription] = useState("");
   const [specialist, setSpecialist] = useState("");
   const [employerName, setEmployerName] = useState("");
-  const [diagnosisCodes, setDiagnosisCodes] = useState("");
+  const [diagnosisCodes, setDiagnosisCodes] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
+
+  useEffect(() => {
+    const getDiagnoses = async () => {
+      const data = await diagnosesService.getAll();
+      setDiagnoses(data);
+    };
+
+    getDiagnoses();
+  }, []);
 
   const addEntry = async (id: string, values: NewEntry) => {
     try {
@@ -50,7 +69,6 @@ const AddOccupationalHealthcare = ({
     setError("");
 
     const sickLeave = startDate || endDate ? { startDate, endDate } : undefined;
-    const codes = diagnosisCodes ? diagnosisCodes.split(",") : undefined;
 
     const newEntry: NewEntry = {
       type: "OccupationalHealthcare",
@@ -58,7 +76,7 @@ const AddOccupationalHealthcare = ({
       description,
       specialist,
       employerName,
-      diagnosisCodes: codes,
+      diagnosisCodes: diagnosisCodes,
       sickLeave: sickLeave,
     };
     addEntry(id, newEntry);
@@ -66,9 +84,18 @@ const AddOccupationalHealthcare = ({
     setDescription("");
     setSpecialist("");
     setEmployerName("");
-    setDiagnosisCodes("");
+    setDiagnosisCodes([]);
     setStartDate("");
     setEndDate("");
+  };
+
+  const handleCodeChange = (event: SelectChangeEvent<string[]>) => {
+    event.preventDefault();
+    setDiagnosisCodes(
+      typeof event.target.value === "string"
+        ? event.target.value.split(",")
+        : event.target.value,
+    );
   };
 
   return (
@@ -76,7 +103,10 @@ const AddOccupationalHealthcare = ({
       <form onSubmit={handleAddEntry}>
         <TextField
           label="Date"
-          placeholder="YYYY-MM-DD"
+          type="date"
+          slotProps={{
+            inputLabel: { shrink: true },
+          }}
           fullWidth
           value={date}
           required={true}
@@ -103,16 +133,29 @@ const AddOccupationalHealthcare = ({
           required={true}
           onChange={({ target }) => setEmployerName(target.value)}
         />
-        <TextField
-          label="Diagnosis Codes (comma seperated)"
-          fullWidth
-          value={diagnosisCodes}
-          onChange={({ target }) => setDiagnosisCodes(target.value)}
-        />
+        <InputLabel required={true} id="diagnosisCodesLabel">
+          Diagnosis Codes
+          <Select
+            onChange={handleCodeChange}
+            value={diagnosisCodes}
+            labelId="diagnosisCodesLabel"
+            required={true}
+            multiple
+          >
+            {diagnoses.map((diagnosis) => (
+              <MenuItem value={diagnosis.code}>
+                {diagnosis.code} - {diagnosis.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </InputLabel>
         <h3>Sick Leave</h3>
         <TextField
           label="Start Date"
-          placeholder="YYYY-MM-DD"
+          type="date"
+          slotProps={{
+            inputLabel: { shrink: true },
+          }}
           fullWidth
           value={startDate}
           required={false}
@@ -120,7 +163,10 @@ const AddOccupationalHealthcare = ({
         />
         <TextField
           label="End Date"
-          placeholder="YYYY-MM-DD"
+          type="date"
+          slotProps={{
+            inputLabel: { shrink: true },
+          }}
           fullWidth
           value={endDate}
           required={false}

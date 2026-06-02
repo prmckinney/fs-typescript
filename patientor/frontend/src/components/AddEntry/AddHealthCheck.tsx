@@ -1,10 +1,18 @@
-import { useState, SyntheticEvent } from "react";
+import { useEffect, useState, SyntheticEvent } from "react";
 import axios from "axios";
 
-import { TextField, Button } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Select,
+  SelectChangeEvent,
+  MenuItem,
+  InputLabel,
+} from "@mui/material";
 
-import { HealthCheckRating, NewEntry } from "../../types";
+import { Diagnosis, HealthCheckRating, NewEntry } from "../../types";
 import patientService from "../../services/patients";
+import diagnosesService from "../../services/diagnoses";
 
 const AddHealthCheck = ({
   id,
@@ -17,7 +25,18 @@ const AddHealthCheck = ({
   const [description, setDescription] = useState("");
   const [specialist, setSpecialist] = useState("");
   const [healthCheckRating, setHealthCheckRating] = useState("");
-  const [diagnosisCodes, setDiagnosisCodes] = useState("");
+  const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
+
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
+
+  useEffect(() => {
+    const getDiagnoses = async () => {
+      const data = await diagnosesService.getAll();
+      setDiagnoses(data);
+    };
+
+    getDiagnoses();
+  }, []);
 
   const addEntry = async (id: string, values: NewEntry) => {
     try {
@@ -47,22 +66,34 @@ const AddHealthCheck = ({
     event.preventDefault();
     setError("");
 
-    const codes = diagnosisCodes ? diagnosisCodes.split(",") : undefined;
-
     const newEntry: NewEntry = {
       type: "HealthCheck",
       date,
       description,
       specialist,
       healthCheckRating: parseInt(healthCheckRating) as HealthCheckRating,
-      diagnosisCodes: codes,
+      diagnosisCodes: diagnosisCodes,
     };
     addEntry(id, newEntry);
     setDate("");
     setDescription("");
     setSpecialist("");
     setHealthCheckRating("");
-    setDiagnosisCodes("");
+    setDiagnosisCodes([]);
+  };
+
+  const handleChange = (event: SelectChangeEvent<string>) => {
+    event.preventDefault();
+    setHealthCheckRating(event.target.value);
+  };
+
+  const handleCodeChange = (event: SelectChangeEvent<string[]>) => {
+    event.preventDefault();
+    setDiagnosisCodes(
+      typeof event.target.value === "string"
+        ? event.target.value.split(",")
+        : event.target.value,
+    );
   };
 
   return (
@@ -70,7 +101,10 @@ const AddHealthCheck = ({
       <form onSubmit={handleAddEntry}>
         <TextField
           label="Date"
-          placeholder="YYYY-MM-DD"
+          type="date"
+          slotProps={{
+            inputLabel: { shrink: true },
+          }}
           fullWidth
           value={date}
           required={true}
@@ -90,20 +124,36 @@ const AddHealthCheck = ({
           required={true}
           onChange={({ target }) => setSpecialist(target.value)}
         />
-        <TextField
-          label="Health Check Rating (0-3)"
-          fullWidth
-          value={healthCheckRating}
-          required={true}
-          type="number"
-          onChange={({ target }) => setHealthCheckRating(target.value)}
-        />
-        <TextField
-          label="Diagnosis Codes (comma seperated)"
-          fullWidth
-          value={diagnosisCodes}
-          onChange={({ target }) => setDiagnosisCodes(target.value)}
-        />
+        <InputLabel required={true} id="healthCheckRatingLabel">
+          Health Check Rating
+          <Select
+            onChange={handleChange}
+            value={healthCheckRating}
+            labelId="healthCheckRatingLabel"
+            required={true}
+          >
+            <MenuItem value={0}>Healthy</MenuItem>
+            <MenuItem value={1}>LowRisk</MenuItem>
+            <MenuItem value={2}>HighRisk</MenuItem>
+            <MenuItem value={3}>CriticalRisk</MenuItem>
+          </Select>
+        </InputLabel>
+        <InputLabel required={true} id="diagnosisCodesLabel">
+          Diagnosis Codes
+          <Select
+            onChange={handleCodeChange}
+            value={diagnosisCodes}
+            labelId="diagnosisCodesLabel"
+            required={true}
+            multiple
+          >
+            {diagnoses.map((diagnosis) => (
+              <MenuItem value={diagnosis.code}>
+                {diagnosis.code} - {diagnosis.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </InputLabel>
         <Button type="submit" variant="contained">
           Add
         </Button>

@@ -14,6 +14,9 @@ const BaseEntrySchema = z.object({
   diagnosisCodes: z.optional(z.array(z.string())),
 });
 
+type BaseEntry = z.infer<typeof BaseEntrySchema>;
+export type NewBaseEntry = Omit<BaseEntry, "id">;
+
 // interface BaseEntry {
 //   id: string;
 //   description: string;

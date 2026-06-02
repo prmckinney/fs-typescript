@@ -1,10 +1,18 @@
-import { useState, SyntheticEvent } from "react";
+import { useEffect, useState, SyntheticEvent } from "react";
 import axios from "axios";
 
-import { TextField, Button } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Select,
+  SelectChangeEvent,
+  MenuItem,
+  InputLabel,
+} from "@mui/material";
 
-import { NewEntry } from "../../types";
+import { Diagnosis, NewEntry } from "../../types";
 import patientService from "../../services/patients";
+import diagnosesService from "../../services/diagnoses";
 
 const AddHospital = ({
   id,
@@ -16,9 +24,20 @@ const AddHospital = ({
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
   const [specialist, setSpecialist] = useState("");
-  const [diagnosisCodes, setDiagnosisCodes] = useState("");
+  const [diagnosisCodes, setDiagnosisCodes] = useState([]);
   const [dischargeDate, setDischargeDate] = useState("");
   const [criteria, setCriteria] = useState("");
+
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
+
+  useEffect(() => {
+    const getDiagnoses = async () => {
+      const data = await diagnosesService.getAll();
+      setDiagnoses(data);
+    };
+
+    getDiagnoses();
+  }, []);
 
   const addEntry = async (id: string, values: NewEntry) => {
     try {
@@ -48,21 +67,28 @@ const AddHospital = ({
     event.preventDefault();
     setError("");
 
-    const codes = diagnosisCodes ? diagnosisCodes.split(",") : undefined;
-
     const newEntry: NewEntry = {
       type: "Hospital",
       date,
       description,
       specialist,
-      diagnosisCodes: codes,
+      diagnosisCodes: diagnosisCodes,
       discharge: { date: dischargeDate, criteria: criteria },
     };
     addEntry(id, newEntry);
     setDate("");
     setDescription("");
     setSpecialist("");
-    setDiagnosisCodes("");
+    setDiagnosisCodes([]);
+  };
+
+  const handleCodeChange = (event: SelectChangeEvent<string[]>) => {
+    event.preventDefault();
+    setDiagnosisCodes(
+      typeof event.target.value === "string"
+        ? event.target.value.split(",")
+        : event.target.value,
+    );
   };
 
   return (
@@ -70,7 +96,10 @@ const AddHospital = ({
       <form onSubmit={handleAddEntry}>
         <TextField
           label="Date"
-          placeholder="YYYY-MM-DD"
+          type="date"
+          slotProps={{
+            inputLabel: { shrink: true },
+          }}
           fullWidth
           value={date}
           required={true}
@@ -90,15 +119,28 @@ const AddHospital = ({
           required={true}
           onChange={({ target }) => setSpecialist(target.value)}
         />
-        <TextField
-          label="Diagnosis Codes (comma seperated)"
-          fullWidth
-          value={diagnosisCodes}
-          onChange={({ target }) => setDiagnosisCodes(target.value)}
-        />
+        <InputLabel required={true} id="diagnosisCodesLabel">
+          Diagnosis Codes
+          <Select
+            onChange={handleCodeChange}
+            value={diagnosisCodes}
+            labelId="diagnosisCodesLabel"
+            required={true}
+            multiple
+          >
+            {diagnoses.map((diagnosis) => (
+              <MenuItem value={diagnosis.code}>
+                {diagnosis.code} - {diagnosis.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </InputLabel>
         <TextField
           label="Discharge Date"
-          placeholder="YYYY-MM-DD"
+          type="date"
+          slotProps={{
+            inputLabel: { shrink: true },
+          }}
           fullWidth
           value={dischargeDate}
           required={true}
