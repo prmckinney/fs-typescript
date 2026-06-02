@@ -5,7 +5,7 @@ import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import TransgenderIcon from "@mui/icons-material/Transgender";
 
-import { Patient, Gender } from "../../types";
+import { Patient, Gender, Entry } from "../../types";
 import patientService from "../../services/patients";
 import EntryDetails from "./entry";
 
@@ -35,6 +35,14 @@ const PatientDetailsPage = () => {
     if (id) getPatient(id);
   }, [id]);
 
+  const updatePatient = (entry: Entry) => {
+    setPatient((patient) =>
+      patient
+        ? { ...patient, entries: patient.entries.concat(entry) }
+        : undefined,
+    );
+  };
+
   if (!patient) return null;
 
   return (
@@ -51,7 +59,7 @@ const PatientDetailsPage = () => {
         {patient.dateOfBirth ? `date of birth: ${patient.dateOfBirth}` : null}
       </p>
       <h2>Entries</h2>
-      <AddEntry id={patient.id} />
+      <AddEntry id={patient.id} updatePatient={updatePatient} />
       {patient.entries.map((entry) => (
         <EntryDetails entry={entry} key={entry.id} />
       ))}

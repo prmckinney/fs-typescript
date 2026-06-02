@@ -104,7 +104,7 @@ const EntryDetails = ({ entry }: { entry: Entry }) => {
               </li>
             ))}
           </ul>
-          Dischaged {entry.discharge.date} - {entry.discharge.criteria}
+          Discharged {entry.discharge.date} - {entry.discharge.criteria}
           <br />
           diagnosed by {entry.specialist}
         </Card>
