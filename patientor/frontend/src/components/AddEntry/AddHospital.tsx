@@ -3,10 +3,10 @@ import axios from "axios";
 
 import { TextField, Button } from "@mui/material";
 
-import { HealthCheckRating, NewEntry } from "../../types";
+import { NewEntry } from "../../types";
 import patientService from "../../services/patients";
 
-const AddHealthCheck = ({
+const AddHospital = ({
   id,
   setError,
 }: {
@@ -16,8 +16,9 @@ const AddHealthCheck = ({
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
   const [specialist, setSpecialist] = useState("");
-  const [healthCheckRating, setHealthCheckRating] = useState("");
   const [diagnosisCodes, setDiagnosisCodes] = useState("");
+  const [dischargeDate, setDischargeDate] = useState("");
+  const [criteria, setCriteria] = useState("");
 
   const addEntry = async (id: string, values: NewEntry) => {
     try {
@@ -50,18 +51,17 @@ const AddHealthCheck = ({
     const codes = diagnosisCodes ? diagnosisCodes.split(",") : undefined;
 
     const newEntry: NewEntry = {
-      type: "HealthCheck",
+      type: "Hospital",
       date,
       description,
       specialist,
-      healthCheckRating: parseInt(healthCheckRating) as HealthCheckRating,
       diagnosisCodes: codes,
+      discharge: { date: dischargeDate, criteria: criteria },
     };
     addEntry(id, newEntry);
     setDate("");
     setDescription("");
     setSpecialist("");
-    setHealthCheckRating("");
     setDiagnosisCodes("");
   };
 
@@ -91,18 +91,25 @@ const AddHealthCheck = ({
           onChange={({ target }) => setSpecialist(target.value)}
         />
         <TextField
-          label="Health Check Rating (0-3)"
-          fullWidth
-          value={healthCheckRating}
-          required={true}
-          type="number"
-          onChange={({ target }) => setHealthCheckRating(target.value)}
-        />
-        <TextField
           label="Diagnosis Codes (comma seperated)"
           fullWidth
           value={diagnosisCodes}
           onChange={({ target }) => setDiagnosisCodes(target.value)}
+        />
+        <TextField
+          label="Discharge Date"
+          placeholder="YYYY-MM-DD"
+          fullWidth
+          value={dischargeDate}
+          required={true}
+          onChange={({ target }) => setDischargeDate(target.value)}
+        />
+        <TextField
+          label="Discharge Criteria"
+          fullWidth
+          value={criteria}
+          required={true}
+          onChange={({ target }) => setCriteria(target.value)}
         />
         <Button type="submit" variant="contained">
           Add
@@ -112,4 +119,4 @@ const AddHealthCheck = ({
   );
 };
 
-export default AddHealthCheck;
+export default AddHospital;

@@ -9,7 +9,7 @@ import { Patient, Gender } from "../../types";
 import patientService from "../../services/patients";
 import EntryDetails from "./entry";
 
-import AddHealthCheck from "../AddEntry/AddHealthCheck";
+import AddEntry from "../AddEntry/AddEntry";
 
 const renderGender = (param: Gender) => {
   switch (param) {
@@ -51,9 +51,9 @@ const PatientDetailsPage = () => {
         {patient.dateOfBirth ? `date of birth: ${patient.dateOfBirth}` : null}
       </p>
       <h2>Entries</h2>
-      <AddHealthCheck id={patient.id} />
+      <AddEntry id={patient.id} />
       {patient.entries.map((entry) => (
-        <EntryDetails entry={entry} />
+        <EntryDetails entry={entry} key={entry.id} />
       ))}
     </div>
   );

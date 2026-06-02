@@ -3,10 +3,10 @@ import axios from "axios";
 
 import { TextField, Button } from "@mui/material";
 
-import { HealthCheckRating, NewEntry } from "../../types";
+import { NewEntry } from "../../types";
 import patientService from "../../services/patients";
 
-const AddHealthCheck = ({
+const AddOccupationalHealthcare = ({
   id,
   setError,
 }: {
@@ -16,8 +16,10 @@ const AddHealthCheck = ({
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
   const [specialist, setSpecialist] = useState("");
-  const [healthCheckRating, setHealthCheckRating] = useState("");
+  const [employerName, setEmployerName] = useState("");
   const [diagnosisCodes, setDiagnosisCodes] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const addEntry = async (id: string, values: NewEntry) => {
     try {
@@ -47,22 +49,26 @@ const AddHealthCheck = ({
     event.preventDefault();
     setError("");
 
+    const sickLeave = startDate || endDate ? { startDate, endDate } : undefined;
     const codes = diagnosisCodes ? diagnosisCodes.split(",") : undefined;
 
     const newEntry: NewEntry = {
-      type: "HealthCheck",
+      type: "OccupationalHealthcare",
       date,
       description,
       specialist,
-      healthCheckRating: parseInt(healthCheckRating) as HealthCheckRating,
+      employerName,
       diagnosisCodes: codes,
+      sickLeave: sickLeave,
     };
     addEntry(id, newEntry);
     setDate("");
     setDescription("");
     setSpecialist("");
-    setHealthCheckRating("");
+    setEmployerName("");
     setDiagnosisCodes("");
+    setStartDate("");
+    setEndDate("");
   };
 
   return (
@@ -91,18 +97,34 @@ const AddHealthCheck = ({
           onChange={({ target }) => setSpecialist(target.value)}
         />
         <TextField
-          label="Health Check Rating (0-3)"
+          label="Employer Name"
           fullWidth
-          value={healthCheckRating}
+          value={employerName}
           required={true}
-          type="number"
-          onChange={({ target }) => setHealthCheckRating(target.value)}
+          onChange={({ target }) => setEmployerName(target.value)}
         />
         <TextField
           label="Diagnosis Codes (comma seperated)"
           fullWidth
           value={diagnosisCodes}
           onChange={({ target }) => setDiagnosisCodes(target.value)}
+        />
+        <h3>Sick Leave</h3>
+        <TextField
+          label="Start Date"
+          placeholder="YYYY-MM-DD"
+          fullWidth
+          value={startDate}
+          required={false}
+          onChange={({ target }) => setStartDate(target.value)}
+        />
+        <TextField
+          label="End Date"
+          placeholder="YYYY-MM-DD"
+          fullWidth
+          value={endDate}
+          required={false}
+          onChange={({ target }) => setEndDate(target.value)}
         />
         <Button type="submit" variant="contained">
           Add
@@ -112,4 +134,4 @@ const AddHealthCheck = ({
   );
 };
 
-export default AddHealthCheck;
+export default AddOccupationalHealthcare;

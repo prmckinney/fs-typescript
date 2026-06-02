@@ -52,7 +52,7 @@ const EntryDetails = ({ entry }: { entry: Entry }) => {
   switch (entry.type) {
     case "HealthCheck":
       return (
-        <Card variant="outlined" key={entry.id}>
+        <Card variant="outlined">
           {entry.date} <LocalHospital />
           <br />
           <i>{entry.description}</i>
@@ -70,7 +70,7 @@ const EntryDetails = ({ entry }: { entry: Entry }) => {
       );
     case "OccupationalHealthcare":
       return (
-        <Card variant="outlined" key={entry.id}>
+        <Card variant="outlined">
           {entry.date} <Sick /> {entry.employerName}
           <br />
           <i>{entry.description}</i>
@@ -86,7 +86,7 @@ const EntryDetails = ({ entry }: { entry: Entry }) => {
       );
     case "Hospital":
       return (
-        <Card variant="outlined" key={entry.id}>
+        <Card variant="outlined">
           {entry.date} <Emergency />
           <br />
           <i>{entry.description}</i>
