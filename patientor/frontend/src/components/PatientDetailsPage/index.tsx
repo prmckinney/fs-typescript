@@ -5,17 +5,11 @@ import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import TransgenderIcon from "@mui/icons-material/Transgender";
 
-import { Diagnosis, Patient, Gender } from "../../types";
+import { Patient, Gender } from "../../types";
 import patientService from "../../services/patients";
-import diagnosesService from "../../services/diagnoses";
 import EntryDetails from "./entry";
 
-const lookupDiagnosis = (code: string, diagnoses: Diagnosis[]): string => {
-  const diagnosis = diagnoses.find((n) => n.code === code);
-
-  if (diagnosis) return diagnosis.name;
-  else return "";
-};
+import AddHealthCheck from "../AddEntry/AddHealthCheck";
 
 const renderGender = (param: Gender) => {
   switch (param) {
@@ -30,17 +24,7 @@ const renderGender = (param: Gender) => {
 
 const PatientDetailsPage = () => {
   const [patient, setPatient] = useState<Patient>();
-  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const id = useParams().id;
-
-  useEffect(() => {
-    const getDiagnoses = async () => {
-      const data = await diagnosesService.getAll();
-      setDiagnoses(data);
-    };
-
-    getDiagnoses();
-  }, []);
 
   useEffect(() => {
     const getPatient = async (id: string) => {
@@ -67,6 +51,7 @@ const PatientDetailsPage = () => {
         {patient.dateOfBirth ? `date of birth: ${patient.dateOfBirth}` : null}
       </p>
       <h2>Entries</h2>
+      <AddHealthCheck id={patient.id} />
       {patient.entries.map((entry) => (
         <EntryDetails entry={entry} />
       ))}

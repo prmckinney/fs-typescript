@@ -40,6 +40,8 @@ const addPatient = (entry: NewPatientData): PatientData => {
 
 const addEntry = (id: string, entry: NewEntry): Entry => {
   const patient = getPatientEntry(id);
+  console.log("id ==> ", id);
+  if (!patient) throw new Error("Patient not found");
 
   const entry_id: string = uuid();
   const newEntry = {
@@ -47,7 +49,8 @@ const addEntry = (id: string, entry: NewEntry): Entry => {
     ...entry,
   };
 
-  patient?.entries.push(newEntry);
+  patient.entries.push(newEntry);
+  console.log(patient.entries);
   return newEntry;
 };
 

@@ -21,7 +21,7 @@ const errorMiddleware = (
   next: NextFunction,
 ) => {
   if (error instanceof z.ZodError) {
-    res.status(400).send({ error: error.issues });
+    res.status(400).send({ error: z.prettifyError(error) });
   } else {
     next(error);
   }
