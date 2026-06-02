@@ -81,6 +81,13 @@ const EntryDetails = ({ entry }: { entry: Entry }) => {
               </li>
             ))}
           </ul>
+          {entry.sickLeave ? (
+            <div>
+              <h4>Sick Leave Granted</h4>
+              <ul>Start Date: {entry.sickLeave.startDate}</ul>
+              <ul>End Date: {entry.sickLeave.endDate}</ul>
+            </div>
+          ) : null}
           diagnosed by {entry.specialist}
         </Card>
       );
@@ -97,6 +104,8 @@ const EntryDetails = ({ entry }: { entry: Entry }) => {
               </li>
             ))}
           </ul>
+          Dischaged {entry.discharge.date} - {entry.discharge.criteria}
+          <br />
           diagnosed by {entry.specialist}
         </Card>
       );
